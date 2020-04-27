@@ -1,0 +1,40 @@
+.dash-container {
+  padding: 2rem 2rem 2rem 16rem;
+}
+
+.flex-1 {
+  flex: 1;
+}
+
+.dash-nav {
+  position: fixed;
+  left: 0;
+  top: 0;
+  height: 100%;
+  background: #345;
+  width: 14rem;
+  color: #fff;
+
+  .inner-nav li a {
+    padding-left: 2rem;
+    margin: 0;
+  }
+
+  ul {
+    list-style: none;
+    padding: 0;
+    color: #fff;
+  }
+
+  li a {
+    color: #fff;
+    display: block;
+    padding: .5rem 1rem;
+    cursor: pointer;
+    transition: .2s ease-in-out;
+  }
+
+  .active {
+    background: rgba(255,255,255,.2);
+  }
+}

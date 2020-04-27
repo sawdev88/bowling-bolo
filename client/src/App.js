@@ -15,8 +15,12 @@ import Landing from "./components/layout/Landing";
 import Register from "./components/auth/Register";
 import Login from "./components/auth/Login";
 import PrivateRoute from "./components/private-route/PrivateRoute";
-import Dashboard from "./components/dashboard/Dashboard";
 import Spinner from './components/elements/Spinner';
+
+import Dashboard from "./components/dashboard/Dashboard";
+import Home from "./components/dashboard/Home";
+import Listings from "./components/dashboard/Listings/Listings";
+import CreateListing from "./components/dashboard/Listings/CreateListing";
 
 // Check for token to keep user logged in
 if (localStorage.jwtToken) {
@@ -53,10 +57,11 @@ function App() {
       <div className="App">
         <Navbar/>
         <Route exact={true} path="/" component={Landing}/>
-        <Route exact={true} path="/register" component={Register}/>
         <Route exact={true} path="/login" component={Login}/>
         <Switch>
-          <PrivateRoute exact={true} path="/dashboard" component={Dashboard}/>
+          <Dashboard exact={true} path="/dashboard" component={Home} />
+          <Dashboard exact={true} path="/dashboard/listings" component={Listings} />
+          <Dashboard exact={true} path="/dashboard/listings/create" component={CreateListing} />
         </Switch>
       </div>
       { isLoading && <Spinner /> }
