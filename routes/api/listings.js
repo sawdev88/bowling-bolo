@@ -7,12 +7,30 @@ const Listing = require("../../models/Listing");
 // @route Post api/listings/getAll
 // @desc Get user scores
 // @access Public
-router.get("/get-all", (req, res) => {
+router.get("/get-all", (req, res, next) => {
   // get all listings
-  Listing.find({}, (err, listings) => {
-    if (err) return err;
-    res.send(listings)
-  })
+  var queryString = {};
+  if (req.query.filter) {
+      queryString = { [req.query.filter]: true }
+  }
+  
+  let filter = req.query.filter;
+  let perPage = 10;
+  let page = req.params.page || 1;
+
+  Listing.find(queryString)
+         .skip((perPage * page) - perPage)
+         .limit(perPage)
+         .exec((err, listings) => {
+           Listing.count(queryString).then(count => {
+             res.send({
+               result: listings,
+               total: count,
+               current: page,
+               pages: Math.ceil(count/ perPage)
+             })
+           })
+        });
 });
 
 // @route Post api/listings/create-update

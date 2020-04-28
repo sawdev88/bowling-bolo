@@ -2,11 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Moment from 'react-moment';
 import axios from 'axios';
-import { Button, Modal, Alert } from 'react-bootstrap';
+import { Button, Modal, Alert, ButtonGroup } from 'react-bootstrap';
 
 function Listings() {
-  const [listings, setListings] = useState([]);
+  const [listings, setListings] = useState({ result: [] });
   const [show, setShow] = useState(false);
+  const [filter, setFilter] = useState('all');
   const [showMessage, setShowMessage] = useState(false);
   const [selectedListing, setListing] = useState({
     id: 0,
@@ -21,10 +22,14 @@ function Listings() {
     fetchData();
   }, []);
 
-  const getAll = () => {
+  const getAll = (filter = "") => {
+    const query = filter.length && filter !== 'all' ?
+                  '/api/listings/get-all?filter=' + filter :
+                  '/api/listings/get-all';
     axios
-      .get('/api/listings/get-all')
+      .get(query)
       .then(function(response) {
+        console.log(response.data)
           setListings(response.data)
         })
         .catch(err =>
@@ -58,6 +63,11 @@ function Listings() {
     setTimeout(() => { setShowMessage(false) }, 3000)
   }
 
+  const handleFilterChange = (filterName) => {
+    setFilter(filterName.toLowerCase())
+    getAll(filterName)
+  }
+
   return (
     <div>
       <div className="d-flex">
@@ -67,9 +77,15 @@ function Listings() {
         </div>
       </div>
 
-      <div className="pt-5">
+      <div className="pt-3">
+        <ButtonGroup>
+          <Button onClick={ () => handleFilterChange('all') } variant={ filter === 'all' ? 'secondary' : 'light' }>All</Button>
+          <Button onClick={ () => handleFilterChange('active') } variant={ filter === 'active' ? 'secondary' : 'light' }>Active</Button>
+          <Button onClick={ () => handleFilterChange('sold') } variant={ filter === 'sold' ? 'secondary' : 'light' }>Sold</Button>
+        </ButtonGroup>
+
         { showMessage && <Alert variant={'success'}>{ selectedListing.title } deleted</Alert> }
-        <table className="table">
+        <table className="table mt-3">
           <thead>
             <tr>
               <th scope="col">Title</th>
@@ -82,7 +98,7 @@ function Listings() {
             </tr>
           </thead>
           <tbody>
-            { listings.map((item, index) => (
+            { listings.result.map((item, index) => (
               <tr key={index}>
                  <td>{ item.title }</td>
                  <td>{ item.description }</td>
@@ -100,7 +116,11 @@ function Listings() {
           </tbody>
         </table>
 
-        { listings && !listings.length && <div className="text-center mt-3">No Items</div> }
+        <div>
+          <span>Total: { listings.total }</span>
+        </div>
+
+        { !listings.result && !listings.length && <div className="text-center mt-3">No Items</div> }
       </div>
 
       { show && <Modal show={show} onHide={handleClose}>
