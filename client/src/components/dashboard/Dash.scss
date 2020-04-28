@@ -38,3 +38,23 @@
     background: rgba(255,255,255,.2);
   }
 }
+
+.table-actions {
+  font-size: 1.4rem;
+  cursor: pointer;
+
+  a {
+    // hack size until I add icons
+    font-size: 1.2rem;
+    color: #000;
+
+    &:hover {
+      text-decoration: none;
+      color: #008fff;
+    }
+  }
+
+  & span:hover {
+    color: #ff0040;
+  }
+}

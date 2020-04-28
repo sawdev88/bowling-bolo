@@ -25,7 +25,6 @@ function Listings() {
     axios
       .get('/api/listings/get-all')
       .then(function(response) {
-          console.log(response.data)
           setListings(response.data)
         })
         .catch(err =>
@@ -91,7 +90,11 @@ function Listings() {
                  <td><Moment date={item.dateAdded} format="MM-DD-YYYY" /></td>
                  <td>{ item.sold.toString() }</td>
                  <td>{ item.active.toString() }</td>
-                 <td className="text-right">view edit <span onClick={ () => openDeleteModal(item) }>del</span></td>
+                 <td className="text-right table-actions">
+                   { /* todo append id to url*/  }
+                   <Link to={{ pathname: '/dashboard/listings/create', state: { listing: item } }}>✎</Link>
+                  <span className="ml-3" onClick={ () => openDeleteModal(item) }>×</span>
+                </td>
               </tr>
             )) }
           </tbody>
@@ -109,7 +112,7 @@ function Listings() {
           <Button variant="secondary" onClick={ handleClose }>
             Close
           </Button>
-          <Button variant="primary" onClick={ deleteListing }>
+          <Button variant="danger" onClick={ deleteListing }>
             Delete
           </Button>
         </Modal.Footer>

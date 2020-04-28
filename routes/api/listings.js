@@ -47,4 +47,27 @@ router.post("/delete", (req, res) => {
   })
 });
 
+router.post("/update", (req, res) => {
+  console.log(req.body)
+  // update listing
+  Listing.findById(req.body._id, (err, listing) => {
+    if (!listing) {
+      res.status(404).send("Listing is not found");
+    } else {
+      listing.title = req.body.title;
+      listing.description = req.body.description;
+      listing.price = req.body.price;
+      listing.sold = req.body.sold;
+      listing.active = req.body.active;
+
+      listing.save().then(() => {
+           res.json('Listing updated');
+       })
+       .catch(err => {
+           res.status(400).send("Update not possible");
+       });
+    }
+  })
+});
+
 module.exports = router;
