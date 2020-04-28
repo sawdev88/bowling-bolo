@@ -21,6 +21,10 @@ const ListingSchema = new Schema({
     type: Boolean,
     default: false
   },
+  active: {
+    type: Boolean,
+    default: true
+  },
   images: {
     data: Buffer,
     contentType: String

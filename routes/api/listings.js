@@ -19,7 +19,6 @@ router.get("/get-all", (req, res) => {
 // @desc Create or update listing item
 // @access Public
 router.post("/create", (req, res) => {
-      console.log(req.body)
   // create or update listing
   Listing.findOne({ title: req.body.title }).then(item => {
     if (item) {
@@ -29,7 +28,8 @@ router.post("/create", (req, res) => {
         title: req.body.title,
         description: req.body.description,
         price: req.body.price,
-        sold: req.body.sold
+        sold: req.body.sold,
+        active: req.body.active
       });
 
       listing.save().then(listing => {
@@ -41,6 +41,10 @@ router.post("/create", (req, res) => {
 
 router.post("/delete", (req, res) => {
   // delete listing
+  Listing.deleteOne(({ _id: req.query.id}), (err, result) => {
+    if (err) return err;
+      res.send(result)
+  })
 });
 
 module.exports = router;

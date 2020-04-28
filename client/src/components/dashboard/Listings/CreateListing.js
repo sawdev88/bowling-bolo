@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { withRouter } from 'react-router-dom';
-import { createOrEdit } from '../../../actions/listingActions';
 import { useSelector, useDispatch } from "react-redux";
 import axios from 'axios';
 
@@ -13,6 +12,7 @@ function CreateListing(props) {
     price: '',
     images: '',
     sold: false,
+    active: true,
     errors: {}
   })
 
@@ -30,7 +30,7 @@ function CreateListing(props) {
 
   const handleInputChange = event => {
     const { name } = event.target;
-    const value = event.target.name === 'sold' ? event.target.checked : event.target.value;
+    const value = event.target.name === 'sold' || event.target.name === 'active' ? event.target.checked : event.target.value;
 
     setInput({
       ...input,
@@ -48,6 +48,11 @@ function CreateListing(props) {
       <h1 className="mb-4">Create Listing</h1>
       <form noValidate className="w-50" onSubmit={ handleSubmit }>
         <input className="form-control mb-2" name="title" placeholder="Title" error={input.errors.title} onChange={handleInputChange}  />
+        <div className="custom-control custom-switch mb-3 text-right">
+          <input name="active" className="custom-control-input"  type="checkbox" id="activeBox" checked={input.active} error={input.errors.active} onChange={handleInputChange}  />
+          <label className="custom-control-label"  htmlFor="activeBox"> Active</label>
+        </div>
+
         <textarea className="form-control mb-2" name="description" placeholder="Description"  error={input.errors.description} onChange={handleInputChange}></textarea>
 
         <div className="input-group mb-3">
@@ -65,7 +70,7 @@ function CreateListing(props) {
 
         <div className="d-flex mt-2">
           <div className="flex-1">
-            <div className="custom-control custom-switch mt-2">
+            <div className="custom-control custom-checkbox mt-2">
               <input name="sold" className="custom-control-input"  type="checkbox" id="soldBox" checked={input.sold} error={input.errors.sold} onChange={handleInputChange}  />
               <label className="custom-control-label"  htmlFor="soldBox"> mark as sold</label>
             </div>
