@@ -10,19 +10,20 @@ const Listing = require("../../models/Listing");
 router.get("/get-all", (req, res, next) => {
   // get all listings
   var queryString = {};
-  if (req.query.filter) {
-      queryString = { [req.query.filter]: true }
-  }
-  
+  if (req.query.filter) queryString[req.query.filter] = true
+  if (req.query.term) queryString['title'] = { $regex: req.query.term };
+
   let filter = req.query.filter;
   let perPage = 10;
   let page = req.params.page || 1;
+
+  // console.log(queryString)
 
   Listing.find(queryString)
          .skip((perPage * page) - perPage)
          .limit(perPage)
          .exec((err, listings) => {
-           Listing.count(queryString).then(count => {
+           Listing.estimatedDocumentCount(queryString).then(count => {
              res.send({
                result: listings,
                total: count,
@@ -66,7 +67,6 @@ router.post("/delete", (req, res) => {
 });
 
 router.post("/update", (req, res) => {
-  console.log(req.body)
   // update listing
   Listing.findById(req.body._id, (err, listing) => {
     if (!listing) {

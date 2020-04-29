@@ -8,6 +8,7 @@ function Listings() {
   const [listings, setListings] = useState({ result: [] });
   const [show, setShow] = useState(false);
   const [filter, setFilter] = useState('all');
+  const [filterText, setFilterText] = useState('');
   const [showMessage, setShowMessage] = useState(false);
   const [selectedListing, setListing] = useState({
     id: 0,
@@ -22,19 +23,21 @@ function Listings() {
     fetchData();
   }, []);
 
-  const getAll = (filter = "") => {
-    const query = filter.length && filter !== 'all' ?
-                  '/api/listings/get-all?filter=' + filter :
-                  '/api/listings/get-all';
+  const getAll = () => {
+    let params = {};
+    if (filter.length && filter !== 'all') params['filter'] = filter;
+    if (filterText) params['term'] = filterText;
+    var esc = encodeURIComponent;
+    var query = Object.keys(params).map(k => esc(k) + '=' + esc(params[k])).join('&');
+
     axios
-      .get(query)
+      .get('/api/listings/get-all?' + query)
       .then(function(response) {
-        console.log(response.data)
-          setListings(response.data)
-        })
-        .catch(err =>
-          console.log(err)
-        );
+        setListings(response.data)
+      })
+      .catch(err =>
+        console.log(err)
+      );
   }
 
   const openDeleteModal = (item) => {
@@ -64,9 +67,16 @@ function Listings() {
   }
 
   const handleFilterChange = (filterName) => {
-    setFilter(filterName.toLowerCase())
-    getAll(filterName)
+    setFilter(filterName)
   }
+
+  const handleFilterTextChange = (event) => {
+    setFilterText(event.target.value)
+  }
+
+  useEffect(() => {
+    getAll()
+  }, [filterText, filter])
 
   return (
     <div>
@@ -78,11 +88,18 @@ function Listings() {
       </div>
 
       <div className="pt-3">
-        <ButtonGroup>
-          <Button onClick={ () => handleFilterChange('all') } variant={ filter === 'all' ? 'secondary' : 'light' }>All</Button>
-          <Button onClick={ () => handleFilterChange('active') } variant={ filter === 'active' ? 'secondary' : 'light' }>Active</Button>
-          <Button onClick={ () => handleFilterChange('sold') } variant={ filter === 'sold' ? 'secondary' : 'light' }>Sold</Button>
-        </ButtonGroup>
+      <div className="d-flex">
+        <div className="flex-1">
+          <input placeholder="search..." className="form-control mb-2" onChange={ handleFilterTextChange } />
+        </div>
+        <div className="flex-1 text-right">
+          <ButtonGroup>
+            <Button onClick={ () => handleFilterChange('all') } variant={ filter === 'all' ? 'secondary' : 'light' }>All</Button>
+            <Button onClick={ () => handleFilterChange('active') } variant={ filter === 'active' ? 'secondary' : 'light' }>Active</Button>
+            <Button onClick={ () => handleFilterChange('sold') } variant={ filter === 'sold' ? 'secondary' : 'light' }>Sold</Button>
+          </ButtonGroup>
+        </div>
+      </div>
 
         { showMessage && <Alert variant={'success'}>{ selectedListing.title } deleted</Alert> }
         <table className="table mt-3">

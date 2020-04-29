@@ -47,7 +47,6 @@ function CreateListing(props) {
   }
 
   const updateListing = () => {
-    console.log()
     axios
       .post("/api/listings/update", {...input, _id: props.location.state.listing._id})
       .then(res => {
@@ -113,6 +112,7 @@ function CreateListing(props) {
             </div>
           </div>
           <div className="flex-1 text-right">
+            { editMode && <button onClick={ () => props.history.goBack() } className="btn btn-dark mr-2">cancel</button> }
             <button type="submit" className="btn btn-success">{ editMode ? 'Update Listing' : '+ Create Listing' }</button>
           </div>
 
